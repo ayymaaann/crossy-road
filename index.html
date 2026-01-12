@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Crossy Road JS</title>
+  <style>
+    body { margin:0; overflow:hidden; background:#87ceeb; }
+    #ui {
+      position: fixed;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.6);
+      color: white;
+      padding: 8px 18px;
+      border-radius: 12px;
+      font-family: sans-serif;
+      font-size: 18px;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <div id="ui">Score: <span id="score">0</span></div>
+  <script type="module" src="./game.js"></script>
+</body>
+</html>
