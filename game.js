@@ -1,32 +1,31 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
 
-/* ================= SCENE ================= */
+ 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x87ceeb);
 
-/* ================= CAMERA ================= */
+ 
 const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 500);
 
-/* ================= RENDERER ================= */
+ 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(innerWidth, innerHeight);
 document.body.appendChild(renderer.domElement);
 
-/* ================= LIGHT ================= */
+ 
 scene.add(new THREE.AmbientLight(0xffffff, 0.75));
 const sun = new THREE.DirectionalLight(0xffffff, 1);
 sun.position.set(20, 30, 10);
 scene.add(sun);
 
-/* ================= CONSTANTS ================= */
+ 
 const TILE = 2;
 const ROAD_WIDTH = 40;
 const LANE_AHEAD = 35;
 
 let score = 0;
 let moving = false;
-
-/* ================= BASE GROUND (NO BLUE BELOW) ================= */
+ 
 const baseGround = new THREE.Mesh(
   new THREE.PlaneGeometry(200, 500),
   new THREE.MeshStandardMaterial({ color: 0x86efac })
@@ -35,15 +34,14 @@ baseGround.rotation.x = -Math.PI / 2;
 baseGround.position.z = -150;
 scene.add(baseGround);
 
-/* ================= PLAYER ================= */
+ 
 const player = new THREE.Mesh(
   new THREE.BoxGeometry(1, 1, 1),
   new THREE.MeshStandardMaterial({ color: 0xffffff })
 );
 player.position.set(0, 0.5, 2);
 scene.add(player);
-
-/* ================= PROPS ================= */
+ 
 function createTree(x, z) {
   const trunk = new THREE.Mesh(
     new THREE.CylinderGeometry(0.2, 0.2, 1),
@@ -87,8 +85,7 @@ function createLamp(x, z) {
 
   scene.add(pole, lightBox);
 }
-
-/* ================= LANES ================= */
+ 
 const cars = [];
 
 function createLane(z) {
@@ -133,8 +130,7 @@ function createLane(z) {
     createLamp(ROAD_WIDTH / 2 - 3, z);
   }
 }
-
-/* ================= CARS ================= */
+ 
 function randomCarColor() {
   const colors = [0xdc2626, 0x2563eb, 0x16a34a, 0xf97316, 0x9333ea];
   return colors[Math.floor(Math.random() * colors.length)];
@@ -167,13 +163,11 @@ function spawnCars(z) {
     cars.push(car);
   }
 }
-
-/* ================= INIT ================= */
+ 
 for (let i = 0; i < LANE_AHEAD; i++) {
   createLane(-i * TILE);
 }
-
-/* ================= MOVEMENT ================= */
+ 
 function hop(dx, dz) {
   if (moving) return;
   moving = true;
@@ -212,7 +206,7 @@ addEventListener("keydown", e => {
   if (e.key === "d" || e.key === "ArrowRight") hop(1, 0);
 });
 
-/* ================= LOOP ================= */
+ 
 function animate() {
   requestAnimationFrame(animate);
 
@@ -230,7 +224,7 @@ function animate() {
     }
   });
 
-  // 🔥 TOP-RIGHT ISOMETRIC CAMERA
+ 
   camera.position.set(
     player.position.x + 12,
     18,
@@ -246,9 +240,10 @@ function animate() {
 }
 animate();
 
-/* ================= RESIZE ================= */
+ 
 addEventListener("resize", () => {
   camera.aspect = innerWidth / innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight);
 });
+
