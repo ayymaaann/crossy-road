@@ -1,36 +1,41 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
 
-/* ================= SETUP ================= */
+/* ================= SCENE ================= */
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x000000);
+scene.background = new THREE.Color(0x87ceeb);
 
-/* CAMERA */
-const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 500);
-camera.position.set(0, 14, 18);
+/* ================= CAMERA ================= */
+const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 500);
 
-/* RENDERER */
+/* ================= RENDERER ================= */
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(innerWidth, innerHeight);
 document.body.appendChild(renderer.domElement);
 
 /* ================= LIGHT ================= */
-scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+scene.add(new THREE.AmbientLight(0xffffff, 0.75));
 const sun = new THREE.DirectionalLight(0xffffff, 1);
-sun.position.set(10, 20, 10);
+sun.position.set(20, 30, 10);
 scene.add(sun);
-
-/* ================= GRID BACKGROUND ================= */
-const grid = new THREE.GridHelper(200, 100, 0xffffff, 0x444444);
-scene.add(grid);
 
 /* ================= CONSTANTS ================= */
 const TILE = 2;
 const ROAD_WIDTH = 40;
-const LANE_AHEAD = 30;
+const LANE_AHEAD = 35;
+
 let score = 0;
 let moving = false;
 
-/* ================= PLAYER (WHITE CHICKEN) ================= */
+/* ================= BASE GROUND (NO BLUE BELOW) ================= */
+const baseGround = new THREE.Mesh(
+  new THREE.PlaneGeometry(200, 500),
+  new THREE.MeshStandardMaterial({ color: 0x86efac })
+);
+baseGround.rotation.x = -Math.PI / 2;
+baseGround.position.z = -150;
+scene.add(baseGround);
+
+/* ================= PLAYER ================= */
 const player = new THREE.Mesh(
   new THREE.BoxGeometry(1, 1, 1),
   new THREE.MeshStandardMaterial({ color: 0xffffff })
@@ -38,84 +43,144 @@ const player = new THREE.Mesh(
 player.position.set(0, 0.5, 2);
 scene.add(player);
 
+/* ================= PROPS ================= */
+function createTree(x, z) {
+  const trunk = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.2, 0.2, 1),
+    new THREE.MeshStandardMaterial({ color: 0x7c2d12 })
+  );
+  trunk.position.set(x, 0.5, z);
+
+  const leaves = new THREE.Mesh(
+    new THREE.BoxGeometry(1.2, 1.2, 1.2),
+    new THREE.MeshStandardMaterial({ color: 0x166534 })
+  );
+  leaves.position.set(x, 1.6, z);
+
+  scene.add(trunk, leaves);
+}
+
+function createBench(x, z) {
+  const bench = new THREE.Mesh(
+    new THREE.BoxGeometry(1.6, 0.3, 0.5),
+    new THREE.MeshStandardMaterial({ color: 0x92400e })
+  );
+  bench.position.set(x, 0.35, z);
+  scene.add(bench);
+}
+
+function createLamp(x, z) {
+  const pole = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.1, 0.1, 2),
+    new THREE.MeshStandardMaterial({ color: 0x374151 })
+  );
+  pole.position.set(x, 1, z);
+
+  const lightBox = new THREE.Mesh(
+    new THREE.BoxGeometry(0.4, 0.3, 0.4),
+    new THREE.MeshStandardMaterial({
+      color: 0xfef3c7,
+      emissive: 0xfef3c7
+    })
+  );
+  lightBox.position.set(x, 2.2, z);
+
+  scene.add(pole, lightBox);
+}
+
 /* ================= LANES ================= */
-const lanes = [];
 const cars = [];
 
 function createLane(z) {
-  const typeRand = Math.random();
+  const r = Math.random();
+  let type;
 
-  let color;
-  let isRoad = false;
+  if (r < 0.45) type = "grass";
+  else if (r < 0.6) type = "footpath";
+  else type = "road";
 
-  if (typeRand < 0.4) {
-    color = 0x86efac; // 🌱 light green grass
-  } else if (typeRand < 0.6) {
-    color = 0xd6b58a; // 🟫 footpath brown
-  } else {
-    color = 0x374151; // 🛣️ asphalt
-    isRoad = true;
-  }
+  const color =
+    type === "grass" ? 0x86efac :
+    type === "footpath" ? 0xd6b58a :
+    0x374151;
 
   const lane = new THREE.Mesh(
     new THREE.BoxGeometry(ROAD_WIDTH, 0.4, TILE),
     new THREE.MeshStandardMaterial({ color })
   );
-
   lane.position.z = z;
   scene.add(lane);
-  lanes.push({ z, isRoad });
 
-  if (isRoad) spawnCarsForLane(z);
+  if (type === "road") {
+    const line = new THREE.Mesh(
+      new THREE.BoxGeometry(ROAD_WIDTH, 0.05, 0.15),
+      new THREE.MeshStandardMaterial({ color: 0xffffff })
+    );
+    line.position.set(0, 0.25, z);
+    scene.add(line);
+    spawnCars(z);
+  }
+
+  if (type === "grass") {
+    if (Math.random() < 0.5) {
+      createTree(-ROAD_WIDTH / 2 + 4, z);
+      createTree(ROAD_WIDTH / 2 - 4, z);
+    }
+  }
+
+  if (type === "footpath") {
+    createBench(-ROAD_WIDTH / 2 + 3, z);
+    createLamp(ROAD_WIDTH / 2 - 3, z);
+  }
 }
 
-/* ================= CARS (NO OVERLAP) ================= */
-function spawnCarsForLane(z) {
+/* ================= CARS ================= */
+function randomCarColor() {
+  const colors = [0xdc2626, 0x2563eb, 0x16a34a, 0xf97316, 0x9333ea];
+  return colors[Math.floor(Math.random() * colors.length)];
+}
+
+function spawnCars(z) {
   const count = 3;
-  const gap = 8;
+  const gap = 9;
 
   for (let i = 0; i < count; i++) {
     const car = new THREE.Group();
 
     const body = new THREE.Mesh(
       new THREE.BoxGeometry(2.5, 0.6, 1.3),
-      new THREE.MeshStandardMaterial({ color: 0xdc2626 })
+      new THREE.MeshStandardMaterial({ color: randomCarColor() })
     );
     body.position.y = 0.3;
 
     const top = new THREE.Mesh(
       new THREE.BoxGeometry(1.4, 0.5, 0.9),
-      new THREE.MeshStandardMaterial({ color: 0xb91c1c })
+      new THREE.MeshStandardMaterial({ color: 0xffffff })
     );
     top.position.set(0, 0.75, 0);
 
     car.add(body, top);
-
-    car.position.set(
-      ROAD_WIDTH / 2 + i * gap,
-      0,
-      z
-    );
-
+    car.position.set(ROAD_WIDTH / 2 + i * gap, 0, z);
     car.userData.speed = 0.18;
+
     scene.add(car);
     cars.push(car);
   }
 }
 
-/* ================= INITIAL LANES ================= */
+/* ================= INIT ================= */
 for (let i = 0; i < LANE_AHEAD; i++) {
   createLane(-i * TILE);
 }
 
-/* ================= MOVEMENT (WASD FIXED) ================= */
+/* ================= MOVEMENT ================= */
 function hop(dx, dz) {
   if (moving) return;
   moving = true;
 
   const start = player.position.clone();
   const end = start.clone();
-  end.x += dx * TILE;
+  end.x = THREE.MathUtils.clamp(end.x + dx * TILE, -ROAD_WIDTH / 2 + 1, ROAD_WIDTH / 2 - 1);
   end.z += dz * TILE;
 
   let t = 0;
@@ -147,16 +212,14 @@ addEventListener("keydown", e => {
   if (e.key === "d" || e.key === "ArrowRight") hop(1, 0);
 });
 
-/* ================= GAME LOOP ================= */
+/* ================= LOOP ================= */
 function animate() {
   requestAnimationFrame(animate);
 
-  cars.forEach((car, i) => {
+  cars.forEach(car => {
     car.position.x -= car.userData.speed;
-
-    if (car.position.x < -ROAD_WIDTH / 2 - 10) {
+    if (car.position.x < -ROAD_WIDTH / 2 - 10)
       car.position.x = ROAD_WIDTH / 2 + 20;
-    }
 
     if (
       Math.abs(car.position.z - player.position.z) < 0.9 &&
@@ -167,12 +230,20 @@ function animate() {
     }
   });
 
-  camera.position.z = player.position.z + 18;
-  camera.lookAt(player.position.x, 0, player.position.z - 10);
+  // 🔥 TOP-RIGHT ISOMETRIC CAMERA
+  camera.position.set(
+    player.position.x + 12,
+    18,
+    player.position.z + 14
+  );
+  camera.lookAt(
+    player.position.x,
+    0,
+    player.position.z - 6
+  );
 
   renderer.render(scene, camera);
 }
-
 animate();
 
 /* ================= RESIZE ================= */
