@@ -1,9 +1,9 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
 
  
-const scene = new THREE.Scene();
+const scene = new THREE.Scene();   
 scene.background = new THREE.Color(0x87ceeb);
-
+  
  
 const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 500);
 
@@ -246,5 +246,6 @@ addEventListener("resize", () => {
   camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight);
 });
+
 
 
