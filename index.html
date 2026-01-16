@@ -1,27 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Crossy Road JS</title>
-  <style>
-    body { margin:0; overflow:hidden; background:#87ceeb; }
-    #ui {
-      position: fixed;
-      top: 12px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,0.6);
-      color: white;
-      padding: 6px 16px;
-      border-radius: 12px;
-      font-family: sans-serif;
-      font-size: 16px;
-      z-index: 10;
-    }
-  </style>
-</head>
-<body>
-  <div id="ui">Score: <span id="score">0</span></div>
-  <script type="module" src="./game.js"></script>
-</body>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Crossy Road</title>
+		<link rel="stylesheet" href="./style.css" />
+	</head>
+	<body>
+		<canvas class="game"></canvas>
+		<div id="controls">
+			<div>
+				<button id="forward">▲</button>
+				<button id="left">◀</button>
+				<button id="backward">▼</button>
+				<button id="right">▶</button>
+			</div>
+		</div>
+		<div id="score">0</div>
+		<div id="result-container">
+			<div id="result">
+				<h1>Game Over</h1>
+				<p>Your score: <span id="final-score"></span></p>
+				<button id="retry">Retry</button>
+			</div>
+		</div>
+		<script type="module" src="./script.js"></script>
+	</body>
 </html>
