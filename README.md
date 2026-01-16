@@ -2,7 +2,7 @@
   <img src="preview.png" alt="Game Demo Preview" width="80%"/>
 </p>
 
-<h1 align="center">🚦 CROSSY ROAD (WebGL)</h1>
+<h1 align="center">🚦 CROSSY ROAD </h1>
 
 <p align="center">
   <b>A fast, chaotic, addictive arcade game inspired by Crossy Road.</b><br/>
