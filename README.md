@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="preview.png" alt="Game Demo Preview" width="100%"/>
+  <img src="preview.png" alt="Game Demo Preview" width="80%"/>
 </p>
 
 <h1 align="center">🚦 CROSSY ROAD (WebGL)</h1>
@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://YOUR-LIVE-DEMO-LINK-HERE" target="_blank">
+  <a href="https://ayymaaann.github.io/crossy-road/" target="_blank">
     <img src="https://img.shields.io/badge/▶%20PLAY%20NOW-00C853?style=for-the-badge&logo=google-chrome&logoColor=white" />
   </a>
   <a href="https://github.com/ayymaaann/crossy-road" target="_blank">
@@ -57,8 +57,6 @@ One wrong move = 💀
 ---
 
 ## 🚀 Play Online
-👉 **Live Demo:** https://YOUR-LIVE-DEMO-LINK-HERE
-
-(Host it on **GitHub Pages / itch.io / Netlify** for maximum hype)
+👉 **Live Demo:** [Click Me](https://ayymaaann.github.io/crossy-road/)
 
 ---
