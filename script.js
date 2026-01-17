@@ -7,7 +7,7 @@ const tileSize = 42;
            
 function Camera() { 
   const size = 300;
-  const viewRatio = window.innerWidth / window.innerHeight;
+  const viewRatio = window.innerWidth / window.innerHeight; 
   const width = viewRatio < 1 ? size : size * viewRatio;
   const height = viewRatio < 1 ? size / viewRatio : size;
 
