@@ -4,7 +4,7 @@ const minTileIndex = -8;
 const maxTileIndex = 8;
 const tilesPerRow = maxTileIndex - minTileIndex + 1;
 const tileSize = 42;
-
+           
 function Camera() {
   const size = 300;
   const viewRatio = window.innerWidth / window.innerHeight;
