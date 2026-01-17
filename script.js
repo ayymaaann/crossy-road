@@ -1,5 +1,5 @@
 import * as THREE from "https://esm.sh/three";
-
+ 
 const minTileIndex = -8;
 const maxTileIndex = 8;
 const tilesPerRow = maxTileIndex - minTileIndex + 1;
